@@ -62,7 +62,7 @@ python fila_tandem.py
 ```bash
 python3 fila_tandem.py
 ```
-Opção 2: Execução com Testes Específicos (Professor)
+Opção 2: Execução com Testes Específicos
 
 ```bash
 python fila_tandem.py testes.yaml

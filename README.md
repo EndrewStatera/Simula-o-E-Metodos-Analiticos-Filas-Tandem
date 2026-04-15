@@ -122,14 +122,3 @@ Para cada fila, são apresentados:
 * Probabilidade percentual de permanência em cada estado
 
 ---
-
-## Sugestões de Melhoria Visual
-
-Para deixar o projeto ainda mais profissional:
-
-* Adicionar badges (versão do Python, status do projeto, etc.)
-* Incluir diagramas da rede de filas
-* Mostrar um exemplo real de saída do simulador
-* Padronizar títulos e seções para consistência visual
-
----

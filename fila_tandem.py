@@ -142,9 +142,6 @@ class SimuladorRede:
             print("\n")
 
 
-# ==========================================
-# CÓDIGO DE EXECUÇÃO VIA YAML
-# ==========================================
 def executar_de_yaml(caminho_arquivo):
     try:
         # Tenta abrir e ler o arquivo yaml

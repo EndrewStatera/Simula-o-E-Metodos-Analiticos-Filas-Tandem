@@ -175,7 +175,7 @@ def executar_de_yaml(caminho_arquivo):
         tempo_inicio = config.get('tempo_primeira_chegada', 1.5)
         fila_inicio = config.get('fila_primeira_chegada')
 
-        print(f"🚀 Executando simulação a partir do arquivo: {caminho_arquivo}...\n")
+        print(f"Executando simulação a partir do arquivo: {caminho_arquivo}...\n")
         simulador.executar(tempo_primeira_chegada=tempo_inicio, fila_primeira_chegada=fila_inicio)
         simulador.gerar_relatorio()
 

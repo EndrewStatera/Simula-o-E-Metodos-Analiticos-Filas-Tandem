@@ -1,0 +1,29 @@
+# Parâmetros Globais
+limite_aleatorios: 100000
+tempo_primeira_chegada: 1.5
+fila_primeira_chegada: "Fila 1"
+
+# Configuração das Filas na Rede
+filas:
+  - nome: "Fila 1"
+    servidores: 2
+    capacidade: 3
+    chegada_min: 1.0
+    chegada_max: 4.0
+    atendimento_min: 3.0
+    atendimento_max: 4.0
+
+  - nome: "Fila 2"
+    servidores: 1
+    capacidade: 5
+    # null significa que não recebe clientes do exterior
+    chegada_min: null
+    chegada_max: null
+    atendimento_min: 2.0
+    atendimento_max: 3.0
+
+# Topologia da Rede
+roteamento:
+  - origem: "Fila 1"
+    destino: "Fila 2"
+    probabilidade: 0.0  # 0% dos clientes vão da Fila 1 para a Fila 2

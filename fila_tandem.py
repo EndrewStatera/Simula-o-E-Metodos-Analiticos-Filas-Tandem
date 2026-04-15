@@ -1,5 +1,7 @@
 import random
 import heapq
+import sys
+import yaml
 
 class StopSimulation(Exception):
     """Exceção usada para parar a simulação exatamente quando o limite de aleatórios for atingido."""
@@ -41,8 +43,6 @@ class Fila:
         self.perdas = 0
         self.tempos_acumulados = {i: 0.0 for i in range(capacidade + 1)}
 
-    
-
 class SimuladorRede:
     def __init__(self, limite_aleatorios=100000, seed=None):
         self.rng = ControladorRNG(limite_aleatorios, seed)
@@ -60,7 +60,6 @@ class SimuladorRede:
         self.roteamento[origem].append((destino, probabilidade))
 
     def agendar_evento(self, tempo, tipo_evento, fila_nome, externa=False):
-        # O heap do Python ordena pelo primeiro item da tupla (o tempo)
         heapq.heappush(self.eventos, (tempo, tipo_evento, fila_nome, externa))
 
     def atualizar_tempos(self, tempo_atual):
@@ -75,14 +74,12 @@ class SimuladorRede:
         
         if fila.estado < fila.capacidade:
             fila.estado += 1
-            # Se há servidor disponível, o cliente entra em atendimento e agenda sua saída
             if fila.estado <= fila.servidores:
                 tempo_servico = self.rng.uniforme(fila.min_atend, fila.max_atend)
                 self.agendar_evento(tempo_atual + tempo_servico, 'SAIDA', fila_nome)
         else:
             fila.perdas += 1
 
-        # Se foi uma chegada externa, agenda a próxima chegada externa para esta fila
         if externa and fila.min_chegada is not None:
             tempo_chegada = self.rng.uniforme(fila.min_chegada, fila.max_chegada)
             self.agendar_evento(tempo_atual + tempo_chegada, 'CHEGADA', fila_nome, True)
@@ -91,12 +88,10 @@ class SimuladorRede:
         fila = self.filas[fila_nome]
         fila.estado -= 1
 
-        # Se ainda há clientes na fila esperando, o servidor puxa o próximo
         if fila.estado >= fila.servidores:
             tempo_servico = self.rng.uniforme(fila.min_atend, fila.max_atend)
             self.agendar_evento(tempo_atual + tempo_servico, 'SAIDA', fila_nome)
 
-        # Lógica de Roteamento na Rede
         if fila_nome in self.roteamento:
             u = self.rng.gerar()
             prob_acumulada = 0.0
@@ -108,19 +103,15 @@ class SimuladorRede:
                     destino_escolhido = destino
                     break
             
-            # Se houver um destino, o cliente chega na próxima fila instantaneamente
             if destino_escolhido:
                 self.processar_chegada(destino_escolhido, tempo_atual, externa=False)
 
     def executar(self, tempo_primeira_chegada, fila_primeira_chegada):
-        # Agenda o start da simulação
         self.agendar_evento(tempo_primeira_chegada, 'CHEGADA', fila_primeira_chegada, externa=True)
 
         try:
             while self.eventos:
                 tempo_atual, tipo_evento, fila_nome, externa = heapq.heappop(self.eventos)
-                
-                # Atualiza os estatísticas antes de mudar o estado
                 self.atualizar_tempos(tempo_atual)
 
                 if tipo_evento == 'CHEGADA':
@@ -129,7 +120,6 @@ class SimuladorRede:
                     self.processar_saida(fila_nome, tempo_atual)
                     
         except StopSimulation:
-            # A simulação para instantaneamente quando o 100.000º número é gerado
             pass
 
     def gerar_relatorio(self):
@@ -153,30 +143,51 @@ class SimuladorRede:
 
 
 # ==========================================
-# CÓDIGO DE TESTE DO TRABALHO (VALIDAÇÃO)
+# CÓDIGO DE EXECUÇÃO VIA YAML
 # ==========================================
+def executar_de_yaml(caminho_arquivo):
+    try:
+        # Tenta abrir e ler o arquivo yaml
+        with open(caminho_arquivo, 'r', encoding='utf-8') as file:
+            config = yaml.safe_load(file)
+        
+        # Verifica se as configurações básicas existem
+        if not config or 'filas' not in config:
+            raise ValueError("Parâmetros insuficientes")
+
+        limite = config.get('limite_aleatorios', 100000)
+        simulador = SimuladorRede(limite_aleatorios=limite)
+
+        for f in config.get('filas', []):
+            capacidade = float('inf') if str(f.get('capacidade')).lower() == 'inf' else f.get('capacidade')
+            
+            fila = Fila(
+                nome=f['nome'],
+                servidores=f['servidores'],
+                capacidade=capacidade,
+                min_chegada=f.get('chegada_min'),
+                max_chegada=f.get('chegada_max'),
+                min_atend=f.get('atendimento_min'),
+                max_atend=f.get('atendimento_max')
+            )
+            simulador.adicionar_fila(fila)
+
+        for r in config.get('roteamento', []):
+            simulador.configurar_roteamento(r['origem'], r['destino'], r['probabilidade'])
+
+        tempo_inicio = config.get('tempo_primeira_chegada', 1.5)
+        fila_inicio = config.get('fila_primeira_chegada')
+
+        print(f"🚀 Executando simulação a partir do arquivo: {caminho_arquivo}...\n")
+        simulador.executar(tempo_primeira_chegada=tempo_inicio, fila_primeira_chegada=fila_inicio)
+        simulador.gerar_relatorio()
+
+    except (FileNotFoundError, yaml.YAMLError, ValueError, KeyError, TypeError):
+        # Captura qualquer erro de arquivo não encontrado, YAML malformado ou campos faltando
+        print(f"arquivo {caminho_arquivo} corrompido ou sem parâmetros para teste.")
+
+
 if __name__ == "__main__":
-    # 1. Instancia o simulador informando a condição de parada (100.000 aleatórios)
-    # A seed é opcional, mas deixamos sem para que seja aleatório a cada execução.
-    simulador = SimuladorRede(limite_aleatorios=100000)
-
-    # 2. Configura as filas (Nome, Servidores, Capacidade, MinChegada, MaxChegada, MinAtend, MaxAtend)
-    # Fila 1 - G/G/2/3, chegadas entre 1..4, atendimento entre 3..4
-    fila1 = Fila("Fila 1 (G/G/2/3)", servidores=2, capacidade=3, min_chegada=1, max_chegada=4, min_atend=3, max_atend=4)
-    
-    # Fila 2 - G/G/1/5, atendimento entre 2..3 (Sem chegadas externas, logo, Min/Max chegada são None)
-    fila2 = Fila("Fila 2 (G/G/1/5)", servidores=1, capacidade=5, min_chegada=None, max_chegada=None, min_atend=2, max_atend=3)
-
-    simulador.adicionar_fila(fila1)
-    simulador.adicionar_fila(fila2)
-
-    # 3. Configura o Roteamento (Tandem)
-    # 100% (1.0) dos clientes que saem da Fila 1 vão para a Fila 2
-    simulador.configurar_roteamento("Fila 1 (G/G/2/3)", "Fila 2 (G/G/1/5)", 1.0)
-
-    # 4. Executa a simulação
-    # O primeiro cliente chega no tempo 1.5 na Fila 1
-    simulador.executar(tempo_primeira_chegada=1.5, fila_primeira_chegada="Fila 1 (G/G/2/3)")
-
-    # 5. Imprime o Relatório Final
-    simulador.gerar_relatorio()
+    # Pega o arquivo passado por linha de comando ou assume 'entradas.yaml' como padrão
+    arquivo_yaml = sys.argv[1] if len(sys.argv) > 1 else 'entradas.yaml'
+    executar_de_yaml(arquivo_yaml)

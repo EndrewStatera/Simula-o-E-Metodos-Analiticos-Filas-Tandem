@@ -1,37 +1,51 @@
 # Simulador de Redes de Filas (Tandem)
 
-Este projeto contém um simulador de redes de filas baseado em **Eventos Discretos (Discrete Event Simulation - DES)** desenvolvido em Python. Ele é capaz de modelar e simular redes genéricas de filas (G/G/c/K) com roteamento probabilístico.
+Simulador de redes de filas baseado em **Eventos Discretos (Discrete Event Simulation — DES)** desenvolvido em Python.
 
-A configuração da topologia da rede, tempos de chegada, tempos de atendimento e regras de roteamento é feita externamente através de arquivos de configuração em formato **YAML**.
+Permite modelar redes **G/G/c/K** com **roteamento probabilístico**, utilizando configuração externa via arquivos **YAML**.
 
-## 📋 Pré-requisitos e Instalação
+---
 
-Para executar este simulador, você precisará do **Python 3.x** instalado na sua máquina e da biblioteca `PyYAML` para que o script consiga ler os arquivos de configuração.
+## Pré-requisitos e Instalação
 
-Abra o seu terminal (ou prompt de comando) e instale a dependência executando:
+Antes de executar, garanta que você possui:
+
+* **Python 3.x**
+* Biblioteca **PyYAML**
+
+### Instalação
 
 ```bash
 pip install pyyaml
 ```
-Nota de Ambiente: Dependendo do seu sistema operacional (especialmente em distribuições Linux ou no macOS), o comando pip pode estar associado à versão antiga do Python (2.x). Se o comando acima falhar ou disser que o pacote já está instalado mas o script não rodar, utilize explicitamente o instalador do Python 3:
+
+### Nota de Ambiente
+
+> Em alguns sistemas (Linux/macOS), o `pip` pode apontar para Python 2.x.
+
+Se houver erro, utilize:
+
 ```bash
 pip3 install pyyaml
 ```
-Como configurar a rede (Arquivo YAML)
-O simulador lê os parâmetros da simulação através de um arquivo YAML. O arquivo padrão procurado pelo sistema é o entradas.yaml.
+
+---
+
+## Configuração da Rede (Arquivo YAML)
+
+O simulador utiliza um arquivo YAML (por padrão: `entradas.yaml`) para definir toda a lógica da simulação.
+
+### Estrutura do Arquivo
 
 O arquivo deve conter:
 
-Parâmetros globais (limite de aleatórios e tempo de início).
+* Parâmetros globais
+* Definição das filas
+* Regras de roteamento
 
-A lista de filas e suas capacidades/servidores.
+### Exemplo básico
 
-A lista de roteamento (probabilidades de transição entre filas).
-
-Exemplo de estrutura (veja o arquivo entradas.yaml para o formato completo):
-
-YAML
-```bash
+```yaml
 limite_aleatorios: 100000
 tempo_primeira_chegada: 1.5
 fila_primeira_chegada: "Fila 1"
@@ -45,45 +59,77 @@ filas:
     atendimento_min: 3.0
     atendimento_max: 4.0
 ```
-# ...
-Como executar a Simulação
-Navegue pelo terminal até a pasta onde os arquivos estão localizados e escolha uma das opções abaixo:
 
-Aviso Importante sobre o Comando Python: > Assim como no comando pip, alguns sistemas exigem que você digite python3 em vez de apenas python. Se ao rodar os comandos abaixo você receber um erro de sintaxe ou a mensagem "comando não encontrado", substitua python por python3 (ou a versão específica instalada, como python3.10).
+---
 
-Opção 1: Execução Padrão
+## Execução da Simulação
 
-Se você quiser rodar o teste principal, basta executar o script sem nenhum argumento. Ele lerá automaticamente o arquivo entradas.yaml presente na mesma pasta.
+Navegue até o diretório do projeto e escolha uma das opções:
+
+### Execução Padrão
 
 ```bash
 python fila_tandem.py
 ```
-# ou
+
+ou
+
 ```bash
 python3 fila_tandem.py
 ```
-Opção 2: Execução com Testes Específicos
+
+---
+
+### Execução com Arquivo Específico
 
 ```bash
 python fila_tandem.py testes.yaml
 ```
-# ou
+
+ou
+
 ```bash
 python3 fila_tandem.py testes.yaml
 ```
-Nota: Se o arquivo estiver mal formatado ou não for encontrado, o simulador informará o erro sem quebrar a execução de forma abrupta.
 
-Relatório de Saída
-Ao final da execução, o terminal exibirá um relatório contendo:
+---
 
-O tempo global total da simulação.
+### Nota Importante
 
-O número exato de números aleatórios consumidos.
+> Se o comando `python` não funcionar, utilize `python3` ou a versão específica instalada (ex: `python3.10`).
 
-Estatísticas por Fila:
+> Caso o arquivo YAML esteja mal formatado ou ausente, o simulador exibirá uma mensagem de erro sem interromper abruptamente a execução.
 
-Número de clientes perdidos (quando a capacidade estoura).
+---
 
-O tempo acumulado que a fila permaneceu em cada estado (de 0 até a capacidade máxima).
+## Relatório de Saída
 
-A probabilidade percentual (tempo de permanência) de cada estado.
+Ao final da simulação, será exibido um relatório contendo:
+
+### Informações Globais
+
+* Tempo total da simulação
+* Quantidade de números aleatórios utilizados
+
+---
+
+### Estatísticas por Fila
+
+Para cada fila, são apresentados:
+
+* Número de clientes perdidos (overflow)
+* Tempo acumulado em cada estado (0 até capacidade máxima)
+* Probabilidade percentual de permanência em cada estado
+
+---
+
+## Sugestões de Melhoria Visual
+
+Para deixar o projeto ainda mais profissional:
+
+* Adicionar badges (versão do Python, status do projeto, etc.)
+* Incluir diagramas da rede de filas
+* Mostrar um exemplo real de saída do simulador
+* Padronizar títulos e seções para consistência visual
+
+---

@@ -12,9 +12,11 @@ Abra o seu terminal (ou prompt de comando) e instale a dependência executando:
 
 ```bash
 pip install pyyaml
+```
 Nota de Ambiente: Dependendo do seu sistema operacional (especialmente em distribuições Linux ou no macOS), o comando pip pode estar associado à versão antiga do Python (2.x). Se o comando acima falhar ou disser que o pacote já está instalado mas o script não rodar, utilize explicitamente o instalador do Python 3:
-
+```bash
 pip3 install pyyaml
+```
 Como configurar a rede (Arquivo YAML)
 O simulador lê os parâmetros da simulação através de um arquivo YAML. O arquivo padrão procurado pelo sistema é o entradas.yaml.
 
@@ -29,6 +31,7 @@ A lista de roteamento (probabilidades de transição entre filas).
 Exemplo de estrutura (veja o arquivo entradas.yaml para o formato completo):
 
 YAML
+```bash
 limite_aleatorios: 100000
 tempo_primeira_chegada: 1.5
 fila_primeira_chegada: "Fila 1"
@@ -41,6 +44,7 @@ filas:
     chegada_max: 4.0
     atendimento_min: 3.0
     atendimento_max: 4.0
+```
 # ...
 Como executar a Simulação
 Navegue pelo terminal até a pasta onde os arquivos estão localizados e escolha uma das opções abaixo:
@@ -51,19 +55,25 @@ Opção 1: Execução Padrão
 
 Se você quiser rodar o teste principal, basta executar o script sem nenhum argumento. Ele lerá automaticamente o arquivo entradas.yaml presente na mesma pasta.
 
-Bash
+```bash
 python fila_tandem.py
+```
 # ou
+```bash
 python3 fila_tandem.py
+```
 Opção 2: Execução com Testes Específicos (Professor)
 
-Bash
+```bash
 python fila_tandem.py testes.yaml
+```
 # ou
+```bash
 python3 fila_tandem.py testes.yaml
+```
 Nota: Se o arquivo estiver mal formatado ou não for encontrado, o simulador informará o erro sem quebrar a execução de forma abrupta.
 
-📊 Relatório de Saída
+Relatório de Saída
 Ao final da execução, o terminal exibirá um relatório contendo:
 
 O tempo global total da simulação.
